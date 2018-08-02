@@ -13,10 +13,10 @@ class PrivateContact extends Model
     ];
 
     public function users(){
-    	return $this->belongsToMany(User::class);
+    	return $this->belongsTo(User::class);
     }
 
     public function privateRooms(){
-    	return $this->belongsToMany(PrivateRoom::class);	
+    	return $this->belongsTo(PrivateRoom::class);	
     }
 }

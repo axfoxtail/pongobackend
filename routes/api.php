@@ -19,6 +19,7 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function(){
 	Route::post('auth/register/phonenumber', 'Api\UsersController@registerPhonenumber');
 	Route::post('auth/register/verify_phonenumber', 'Api\UsersController@verify_sms_code');
 	Route::post('auth/register/username', 'Api\UsersController@registerUsername');
+	Route::post('auth/register/avatars', 'Api\UsersController@registerAvatars');
 	 
 });
 

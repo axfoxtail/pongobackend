@@ -13,6 +13,7 @@ use App\Http\Requests;
 use JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Avatar;
 use JWTAuthException;
 use Validator;
 use Illuminate\Validation\Rule;
@@ -121,6 +122,76 @@ class UsersController extends Controller
         return HttpResponse::ok(HttpMessage::$USER_GO_NEXT_STEP, $user);
     }
 
+    public function registerAvatars(Request $request){
+        $validator = Validator::make($request->all(), [
+            'username' =>'required',
+            'avatars' =>'required'
+        ]);
+
+        if ($validator->fails()) {
+            return HttpResponse::badRequest(HttpStatus::$ERR_VALIDATION, HttpMessage::$USER_ERROR_CREATING, $validator->errors()->all());
+        }
+
+        $user = User::where('username', $request->get('username'))->where('verify_status', '=', true)->where('complete_status', '=', false)->first();
+
+    
+        if (!$user) {
+            return HttpResponse::serverError(HttpStatus::$ERR_USER_UPLOAD_AVATARS, HttpMessage::$USER_NOT_UPLOAD_AVATAR,
+                HttpMessage::$USER_NOT_UPLOAD_AVATAR);
+        }
+
+
+        $destinationPath = public_path('/avatars');
+        if (!file_exists($destinationPath)) { 
+            mkdir($destinationPath, 0755, true); 
+        }
+
+        if ($request->HasFile('avatars')) {
+          try {
+                $avatars = [];
+                foreach ($request->avatars as $img) {
+                    $fileName = time().'_'.$request->get('username').'.'.$img->getClientOriginalExtension();
+                    $img->move($destinationPath, $fileName);
+                    $avatar = new Avatar(['path' => $fileName]);
+                    array_push($avatars, $avatar);
+                }
+
+                $user->avatars()->saveMany($avatars);
+
+
+                $token = null;
+
+                try {
+
+                    if (!$token = JWTAuth::fromUser($user)) {
+
+                        return HttpResponse::unauthorized(HttpStatus::$ERR_USER_INVALID_CREDENTIALS,
+                            HttpMessage::$USER_INVALID_CREDENTIALS, HttpMessage::$USER_INVALID_CREDENTIALS);
+                    }
+
+                 
+                }
+                catch (JWTAuthException $e) {
+
+                    return HttpResponse::serverError(HttpStatus::$ERR_USER_CREATE_TOKEN,
+                        HttpMessage::$USER_ERR_CREATING_TOKEN, HttpMessage::$USER_ERR_CREATING_TOKEN);
+                } 
+
+
+                $user->complete_status = true;
+                $user->save();
+
+
+                $user->token = $token;
+                return HttpResponse::ok(HttpMessage::$USER_CREATED_SUCCESSFULLY, $user);
+
+            } catch (\Exception $e) {
+                return HttpResponse::serverError(HttpStatus::$ERR_USER_UPLOAD_AVATARS, HttpMessage::$USER_NOT_UPLOAD_AVATAR,
+                HttpMessage::$USER_NOT_UPLOAD_AVATAR);
+            }  
+        } 
+    }
+
     public function register(Request $request){
 
         $validator = Validator::make($request->all(), [
@@ -164,7 +235,7 @@ class UsersController extends Controller
         }
 
         $user->token = $token;
-            return HttpResponse::ok(HttpMessage::$USER_CREATED_SUCCESSFULLY, $user);
+        return HttpResponse::ok(HttpMessage::$USER_CREATED_SUCCESSFULLY, $user);
 
 
     }

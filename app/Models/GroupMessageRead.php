@@ -13,6 +13,6 @@ class GroupMessageRead extends Model
     ];
 
     public function GroupMessages(){
-    	return $this->belongsToMany(GroupMessage::class);
+    	return $this->belongsTo(GroupMessage::class);
     }
 }

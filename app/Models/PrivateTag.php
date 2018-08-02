@@ -14,6 +14,6 @@ class PrivateTag extends Model
     ];
 
     public function privateMessages(){
-    	return $this->belongsToMany(PrivateMessage::class);
+    	return $this->belongsTo(PrivateMessage::class);
     }
 }

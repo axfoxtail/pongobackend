@@ -13,7 +13,7 @@ class PrivateMessage extends Model
     ];
 
     public function privateRooms(){
-    	return $this->belongsToMany(PrivateRoom::class);
+    	return $this->belongsTo(PrivateRoom::class);
     }
 
     public function privateFiles(){

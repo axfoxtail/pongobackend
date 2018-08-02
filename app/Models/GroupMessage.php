@@ -13,7 +13,7 @@ class GroupMessage extends Model
     ];	
 
     public function GroupRooms(){
-    	return $this->belongsToMany(GroupRoom::class);
+    	return $this->belongsTo(GroupRoom::class);
     }
 
     public function GroupFiles(){

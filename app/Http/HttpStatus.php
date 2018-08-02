@@ -28,11 +28,7 @@ class HttpStatus
     public static $ERR_USER_INVALID_CREDENTIALS = 31;
     public static $ERR_USER_CREATE_TOKEN        = 32;
     public static $ERR_USER_NOT_FOUND           = 33;
-    public static $ERR_BLOCK_ADMIN_USER         = 34;
-    public static $ERR_USER_BLOCKED_OPERATION   = 35;
-    public static $ERR_USER_ADD_FUNDS           = 36;
-    public static $ERR_USER_WITHDRAW_FUNDS      = 37;
-    public static $ERR_USER_NOT_ENOUGH_FUNDS    = 38;
+    public static $ERR_USER_UPLOAD_AVATARS      = 34;
 
     
 

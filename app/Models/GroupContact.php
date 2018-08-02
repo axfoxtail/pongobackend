@@ -14,11 +14,11 @@ class GroupContact extends Model
     ];
 
     public function users(){
-    	return $this->belongsToMany(User::class);
+    	return $this->belongsTo(User::class);
     }
 
 
     public function groupRooms(){
-    	return $this->belongsToMany(GroupRoom::class);
+    	return $this->belongsTo(GroupRoom::class);
     }
 }
