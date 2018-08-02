@@ -12,6 +12,7 @@
         "guzzlehttp/psr7": "^1.4",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "^1.0",
+        "twilio/sdk": "^5.20",
         "tymon/jwt-auth": "^0.5.12"
     },
     "require-dev": {

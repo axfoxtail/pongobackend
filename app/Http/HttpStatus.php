@@ -21,6 +21,7 @@ class HttpStatus
     public static $ERR_AUTH_ADMIN_ACCESS               = 25;
     public static $ERR_AUTH_USER_BLOCKED               = 26;
     public static $ERR_AUTH_USER_NOT_ALLOWED           = 27;
+    public static $ERR_AUTH_TWILIO                     = 28;
 
     // UsersController errors
     public static $ERR_USER_EXISTS              = 30;
@@ -33,38 +34,6 @@ class HttpStatus
     public static $ERR_USER_WITHDRAW_FUNDS      = 37;
     public static $ERR_USER_NOT_ENOUGH_FUNDS    = 38;
 
-    // SlatesController errors
-    public static $ERR_SLATES_RETRIEVE             = 50;
-    public static $ERR_SLATE_CREATE                = 51;
-
-    // FantasyPlayersController errors
-    public static $ERR_FANTASY_PLAYERS_RETRIEVE    = 60;
-
-    // ContestsController errors
-    public static $ERR_CREATE_CONTEST      = 70;
-    public static $ERR_CREATE_USER_ENTRY   = 71;
-    public static $ERR_CREATE_OPP_ENTRY    = 73;
-    public static $ERR_REGISTER_CONTEST    = 74;
-    public static $ERR_RETRIEVE_CONTEST    = 75;
-    public static $ERR_NOT_ENOUGH_FUNDS    = 76;
-    public static $ERR_CANCELING_CONTEST   = 77;
-    public static $ERR_EDIT_ENTRY          = 78;
-
-
-    // GamesController errors
-    public static $ERR_GAMES_RETRIEVE      = 90;
-
-    // MailController erros
-    public static $ERROR_EMAIL_NOT_PROVIDED =  101;
-    public static $ERROR_PROMOCODE_INVALID  = 102;
-
-    // PostsController errors
-    public static $ERR_CREATE_POST               = 40;
-    public static $ERR_USER_DISABLED_BLOG_ACCESS = 41;
-    public static $ERR_RETRIVE_POST              = 42;
-    public static $ERR_UPDATE_POST               = 43;
-    public static $ERR_DELETE_POST               = 44;
-    public static $ERR_ADD_COMMENT               = 45;
-    public static $ERR_BLOG_NOT_FOUND            = 46;
+    
 
 }
