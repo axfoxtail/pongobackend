@@ -36,7 +36,7 @@ class HttpMessage
     public static $USER_EMAIL_EXISTS         = 'User with specified phonenumber already exists';
     public static $USER_VERIFY_CODE_INVALID    = 'Verification code is invalid.';
     public static $USER_USERNAME_EXISTS      = 'User with specified username already exists';
-    public static $USER_INVALID_CREDENTIALS  = 'Invalid email or password provided';
+    public static $USER_INVALID_CREDENTIALS  = 'Invalid phonenumber or username provided';
     public static $USER_ERR_CREATING_TOKEN   = 'Error creating token';
     public static $USER_NOT_FOUND            = 'User not found';
     public static $USER_BLOCKED_OPERATION    = 'Operation not allowed because user is blocked';

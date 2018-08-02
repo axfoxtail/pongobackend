@@ -192,54 +192,80 @@ class UsersController extends Controller
         } 
     }
 
-    public function register(Request $request){
-
+    public function LoginFirstStep(Request $request){
         $validator = Validator::make($request->all(), [
-            'phonenumber' => 'required|regex:/(01)[0-9]{9}/',
-            'password' => 'required|min:6',
+            'phonenumber' => 'required|regex:/^\\+?[1-9]\\d{1,14}$/',
+            'username' =>'required'
         ]);
 
         if ($validator->fails()) {
             return HttpResponse::badRequest(HttpStatus::$ERR_VALIDATION, HttpMessage::$USER_ERROR_CREATING, $validator->errors()->all());
         }
 
-        $user = User::where('phonenumber', $request->get('phonenumber'))->first();
+        $user = User::where('username', $request->get('username'))->where('phonenumber', '=', $request->get('phonenumber'))->where('complete_status', '=', true)->first();
 
-        if ($user) {
-            return HttpResponse::serverError(HttpStatus::$ERR_USER_EXISTS, HttpMessage::$USER_EMAIL_EXISTS,
-                HttpMessage::$USER_EMAIL_EXISTS);
+        if (!$user) {
+            return HttpResponse::serverError(HttpStatus::$ERR_VALIDATION, HttpMessage::$USER_INVALID_CREDENTIALS,
+                HttpMessage::$USER_INVALID_CREDENTIALS);
         }
 
-        $user = User::updateOrCreate(array('phonenumber'=>$request->get('phonenumber')),
-             [
-                'phonenumber' => $request->get('phonenumber'),
-                'password' => bcrypt($request->get('password')),
-                'username' => 'sfdaf',
-                'verify_code' => 'fdsf'
-                
-            ]
-         );
-         \Log::info('**************user created*******************');
+        $verify_code = GeneralUtils::generate4VefifyCode();
 
-        $token = null;
-        $credentials = $request->only('phonenumber', 'password');
-        try {
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return HttpResponse::unauthorized(HttpStatus::$ERR_USER_INVALID_CREDENTIALS,
-                    HttpMessage::$USER_INVALID_CREDENTIALS, HttpMessage::$USER_INVALID_CREDENTIALS);
-            }
-        }
-        catch (JWTAuthException $e) {
-            return HttpResponse::serverError(HttpStatus::$ERR_USER_CREATE_TOKEN,
-                HttpMessage::$USER_ERR_CREATING_TOKEN, HttpMessage::$USER_ERR_CREATING_TOKEN);
+        $smsStatus = GeneralUtils::generateSMS($request->get('phonenumber'), $verify_code);
+
+        if (!$smsStatus) {
+            return HttpResponse::serverError(HttpStatus::$ERR_AUTH_TWILIO, HttpMessage::$USER_ERR_SMS_SUPPORT,
+                HttpMessage::$USER_ERR_SMS_SUPPORT);
         }
 
-        $user->token = $token;
-        return HttpResponse::ok(HttpMessage::$USER_CREATED_SUCCESSFULLY, $user);
+        $user->verify_code = $verify_code;
+        $user->save();
 
+        
+        return HttpResponse::ok(HttpMessage::$USER_GO_NEXT_STEP, $user);
 
     }
 
+    public function LoginSecondStep(Request $request){
+        $validator = Validator::make($request->all(), [
+            'verify_code' => 'required',
+            'username' =>'required'
+        ]);
+
+        if ($validator->fails()) {
+            return HttpResponse::badRequest(HttpStatus::$ERR_VALIDATION, HttpMessage::$USER_ERROR_CREATING, $validator->errors()->all());
+        }
+
+        $user = User::where('username', $request->get('username'))->where('verify_code', '=', $request->get('verify_code'))->where('complete_status', '=', true)->first();
+
+        if (!$user) {
+            return HttpResponse::serverError(HttpStatus::$ERR_VALIDATION, HttpMessage::$USER_INVALID_CREDENTIALS,
+                HttpMessage::$USER_INVALID_CREDENTIALS);
+        }
+
+        $token = null;
+
+        try {
+
+            if (!$token = JWTAuth::fromUser($user)) {
+
+                return HttpResponse::unauthorized(HttpStatus::$ERR_USER_INVALID_CREDENTIALS,
+                    HttpMessage::$USER_INVALID_CREDENTIALS, HttpMessage::$USER_INVALID_CREDENTIALS);
+            }
+
+         
+        }
+        catch (JWTAuthException $e) {
+
+            return HttpResponse::serverError(HttpStatus::$ERR_USER_CREATE_TOKEN,
+                HttpMessage::$USER_ERR_CREATING_TOKEN, HttpMessage::$USER_ERR_CREATING_TOKEN);
+        } 
+
+
+        return HttpResponse::ok(HttpMessage::$USER_CREATED_SUCCESSFULLY, ['token' => $token]);
+    }
+
+    
     public function testToken(Request $request){
 
          $user = JWTAuth::toUser($request->token);
